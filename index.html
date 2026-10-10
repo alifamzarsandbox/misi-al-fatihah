@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ms" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Misi Al-Fatihah | Game Kuiz Pendidikan Islam Tahun 1</title>
+  <meta name="description" content="Permainan kuiz interaktif hafazan dan kefahaman Surah Al-Fatihah khas untuk murid Tahun 1 Pendidikan Islam di Malaysia. Ceria, mesra kanak-kanak dan menyeronokkan!">
+  <meta name="theme-color" content="#75C9F5">
+
+  <!-- Google Fonts: Fredoka & Noto Naskh Arabic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700;800&family=Noto+Naskh+Arabic:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Fail Gaya CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Latar Belakang Dekorasi Awan & Bintang Ceria -->
+  <div class="background-decorations" aria-hidden="true">
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+    <div class="star-decor star-1">★</div>
+    <div class="star-decor star-2">✦</div>
+    <div class="star-decor star-3">★</div>
+  </div>
+
+  <!-- Header Navigasi & Kawalan Bunyi -->
+  <header class="app-header">
+    <div class="brand-badge" title="Pendidikan Islam Tahun 1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+      </svg>
+      <span>Misi Al-Fatihah</span>
+    </div>
+
+    <div class="header-controls">
+      <!-- Butang Bantuan / Cara Bermain -->
+      <button id="btn-header-help" class="btn-icon" aria-label="Buka panduan cara bermain" title="Cara Bermain">
+        ❓
+      </button>
+
+      <!-- Butang Hidup/Mati Bunyi -->
+      <button id="btn-toggle-sound" class="btn-icon" aria-label="Hidupkan atau matikan bunyi" title="Kawalan Bunyi">
+        <span id="sound-icon" aria-hidden="true">🔊</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Kontena Utama Aplikasi -->
+  <main class="app-container">
+
+    <!-- ==========================================
+         SKRIN A: HALAMAN UTAMA (LAMAN UTAMA)
+         ========================================== -->
+    <section id="screen-home" class="screen active" aria-labelledby="home-title">
+      <div class="game-card">
+        <!-- Maskot Kartun Buku Comel -->
+        <div class="mascot-wrapper" aria-hidden="true">
+          <svg class="mascot-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Bayang bawah -->
+            <ellipse cx="60" cy="112" rx="42" ry="7" fill="#2457A6" fill-opacity="0.12"/>
+            <!-- Badan Buku Terbuka Kemas & Mesra -->
+            <rect x="22" y="24" width="76" height="80" rx="14" fill="#2457A6"/>
+            <rect x="26" y="28" width="68" height="72" rx="10" fill="#75C9F5"/>
+            <!-- Halaman Buku Putih -->
+            <rect x="32" y="34" width="56" height="60" rx="8" fill="#FFFFFF"/>
+            <!-- Corak Geometri Islam Sederhana -->
+            <path d="M60 40 L64 48 L72 52 L64 56 L60 64 L56 56 L48 52 L56 48 Z" fill="#FFD166"/>
+            <!-- Mata Kartun Comel -->
+            <circle cx="48" cy="72" r="5" fill="#243247"/>
+            <circle cx="72" cy="72" r="5" fill="#243247"/>
+            <circle cx="50" cy="70" r="1.8" fill="#FFFFFF"/>
+            <circle cx="74" cy="70" r="1.8" fill="#FFFFFF"/>
+            <!-- Senyuman Mesra -->
+            <path d="M54 78 Q60 84 66 78" stroke="#243247" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Pipi Merah Jambu Comel -->
+            <ellipse cx="42" cy="76" rx="4" ry="2.5" fill="#FF8FAB"/>
+            <ellipse cx="78" cy="76" rx="4" ry="2.5" fill="#FF8FAB"/>
+          </svg>
+        </div>
+
+        <span class="badge-target">⭐ PENDIDIKAN ISLAM TAHUN 1 ⭐</span>
+        <h1 id="home-title" class="game-title">Misi <span>Al-Fatihah</span></h1>
+        <p class="game-tagline">“Jom Kenali, Fahami dan Hafaz!”</p>
+
+        <div class="button-stack">
+          <button id="btn-start-game" class="btn btn-primary">
+            <span>🎮</span> MULA BERMAIN
+          </button>
+          <button id="btn-view-leaderboard" class="btn btn-secondary">
+            <span>🏆</span> JUARA LEADERBOARD
+          </button>
+          <button id="btn-how-to-play" class="btn btn-outline">
+            <span>📖</span> CARA BERMAIN
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SKRIN B: MASUKKAN NAMA MURID
+         ========================================== -->
+    <section id="screen-name" class="screen" aria-labelledby="name-title">
+      <div class="game-card">
+        <div class="mascot-wrapper" aria-hidden="true" style="width: 90px; height: 90px;">
+          <svg class="mascot-svg" viewBox="0 0 120 120" fill="none">
+            <rect x="26" y="28" width="68" height="72" rx="12" fill="#FFD166"/>
+            <rect x="32" y="34" width="56" height="60" rx="8" fill="#FFFFFF"/>
+            <circle cx="48" cy="62" r="4.5" fill="#243247"/>
+            <circle cx="72" cy="62" r="4.5" fill="#243247"/>
+            <path d="M54 68 Q60 74 66 68" stroke="#243247" stroke-width="2.5" stroke-linecap="round"/>
+            <ellipse cx="42" cy="66" rx="3.5" ry="2" fill="#FF8FAB"/>
+            <ellipse cx="78" cy="66" rx="3.5" ry="2" fill="#FF8FAB"/>
+          </svg>
+        </div>
+
+        <h2 id="name-title" class="input-label">Siapa nama adik?</h2>
+        <p class="game-tagline" style="margin-bottom: 16px;">Masukkan nama pendek adik untuk melihat markah nanti!</p>
+
+        <div class="input-container">
+          <input 
+            type="text" 
+            id="player-name-input" 
+            class="text-input" 
+            placeholder="Contoh: Ali" 
+            maxlength="15" 
+            autocomplete="off"
+            spellcheck="false"
+            aria-describedby="name-hint name-error"
+          >
+          <p id="name-hint" class="input-hint">Hanya huruf, nombor dan ruang (Maksimum 15 aksara)</p>
+          <div id="name-error" class="error-message" role="alert" aria-live="polite"></div>
+        </div>
+
+        <div class="button-stack">
+          <button id="btn-submit-name" class="btn btn-primary">
+            <span>🚀</span> JOM BERMAIN!
+          </button>
+          <button id="btn-back-from-name" class="btn btn-outline btn-small">
+            Kembali
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SKRIN C: PILIH MISI
+         ========================================== -->
+    <section id="screen-mission" class="screen" aria-labelledby="mission-title">
+      <div class="game-card">
+        <h2 id="mission-title" class="game-title" style="font-size: 1.8rem;">Pilih Misi Adik</h2>
+        <p class="game-tagline" style="margin-bottom: 10px;">Pilih misi pembelajaran kegemaran adik:</p>
+
+        <div class="mission-options" role="radiogroup" aria-label="Pilihan Jenis Misi">
+          <!-- Misi 1 -->
+          <div class="mission-card" data-mission="kenali" role="radio" aria-checked="false" tabindex="0">
+            <div class="mission-icon" aria-hidden="true">📖</div>
+            <div class="mission-title">Kenali Ayat</div>
+            <div class="mission-desc">Mengenal pasti dan menyusun ayat Al-Fatihah</div>
+          </div>
+
+          <!-- Misi 2 -->
+          <div class="mission-card" data-mission="fahami" role="radio" aria-checked="false" tabindex="0">
+            <div class="mission-icon" aria-hidden="true">💡</div>
+            <div class="mission-title">Fahami Maksud</div>
+            <div class="mission-desc">Memadankan ayat dengan maksud yang betul</div>
+          </div>
+
+          <!-- Misi 3 (Lalai / Disyorkan) -->
+          <div class="mission-card selected" data-mission="campuran" role="radio" aria-checked="true" tabindex="0">
+            <div class="mission-icon" aria-hidden="true">⭐</div>
+            <div class="mission-title">Misi Campuran</div>
+            <div class="mission-desc">Gabungan soalan ayat dan kefahaman maksud</div>
+          </div>
+        </div>
+
+        <div class="button-stack">
+          <button id="btn-confirm-mission" class="btn btn-primary">
+            <span>✨</span> MULA MISI INI
+          </button>
+          <button id="btn-back-from-mission" class="btn btn-outline btn-small">
+            Kembali
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SKRIN D: PERMAINAN KUIZ
+         ========================================== -->
+    <section id="screen-quiz" class="screen" aria-labelledby="quiz-question-text">
+      <div class="game-card">
+        <!-- Header Kuiz -->
+        <div class="quiz-header">
+          <div class="quiz-meta-bar">
+            <div class="student-tag">
+              <span>👤</span> <span id="quiz-student-name">Ali</span>
+            </div>
+            <div class="question-counter">
+              <span id="quiz-counter">Soalan 1 / 10</span>
+            </div>
+            <div class="score-tag">
+              <span>⭐</span> <span id="quiz-current-score">0 Mata</span>
+            </div>
+          </div>
+
+          <!-- Bar Kemajuan -->
+          <div class="progress-container" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+            <div id="quiz-progress-bar" class="progress-bar"></div>
+          </div>
+        </div>
+
+        <!-- Ruang Soalan -->
+        <div class="question-box">
+          <h2 id="quiz-question-text" class="question-text">Memuatkan soalan...</h2>
+          <div id="quiz-arabic-container" class="arabic-display" dir="rtl" style="display: none;"></div>
+        </div>
+
+        <!-- Ruang Pilihan Kad Jawapan -->
+        <div id="quiz-options-container" class="options-grid type-quad" role="group" aria-label="Pilihan jawapan">
+          <!-- Kad pilihan jawapan dijana oleh JavaScript -->
+        </div>
+
+        <!-- Maklum Balas Segera (Feedback Box) -->
+        <div id="quiz-feedback-box" class="feedback-box" role="status" aria-live="polite">
+          <div class="feedback-headline">
+            <span id="feedback-icon">🎉</span>
+            <span id="feedback-title">Hebat! Jawapan betul!</span>
+          </div>
+          <p id="feedback-explanation" class="feedback-explanation"></p>
+          <button id="btn-next-question" class="btn btn-primary btn-small">
+            SOALAN SETERUSNYA ➔
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SKRIN E: KEPUTUSAN KUIZ
+         ========================================== -->
+    <section id="screen-results" class="screen" aria-labelledby="results-title">
+      <div class="game-card results-card">
+        <div class="results-badge-wrap">
+          <div class="results-badge-circle" id="results-badge-icon" aria-hidden="true">
+            🏆
+          </div>
+        </div>
+
+        <h2 id="results-title" class="game-title" style="font-size: 2rem;">
+          Tahniah, <span id="results-player-name">Ali</span>!
+        </h2>
+
+        <div class="score-display-big" id="results-score-value">100</div>
+        <div class="score-max-tag">daripada 100 Mata</div>
+
+        <div id="results-message-box" class="score-message-box">
+          Hebat! Adik sangat mengenali Surah Al-Fatihah!
+        </div>
+
+        <!-- Statistik Ringkas -->
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-val" id="stat-correct-count" style="color: var(--success-green-dark);">10</div>
+            <div class="stat-lbl">Betul ✅</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-val" id="stat-wrong-count" style="color: #D9383A;">0</div>
+            <div class="stat-lbl">Salah ❌</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-val" id="stat-percent">100%</div>
+            <div class="stat-lbl">Peratusan ⭐</div>
+          </div>
+        </div>
+
+        <div class="button-stack">
+          <button id="btn-play-again" class="btn btn-primary">
+            <span>🔄</span> MAIN LAGI
+          </button>
+          <button id="btn-results-leaderboard" class="btn btn-secondary">
+            <span>🏆</span> LIHAT LEADERBOARD
+          </button>
+          <button id="btn-results-home" class="btn btn-outline">
+            <span>🏠</span> KEMBALI KE UTAMA
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SKRIN F: LEADERBOARD TOP 10
+         ========================================== -->
+    <section id="screen-leaderboard" class="screen" aria-labelledby="leaderboard-title">
+      <div class="game-card">
+        <div class="leaderboard-header-tag">
+          <span>🌟</span> SENARAI KECEMERLANGAN
+        </div>
+
+        <h2 id="leaderboard-title" class="game-title" style="font-size: 1.85rem;">
+          JUARA MISI AL-FATIHAH
+        </h2>
+
+        <p id="leaderboard-status-badge" class="leaderboard-status-badge">
+          Memuatkan kedudukan juara...
+        </p>
+
+        <!-- Senarai Top 10 -->
+        <ul id="leaderboard-list" class="leaderboard-list" aria-label="10 Rekod Terbaik">
+          <!-- Item dijana oleh script.js -->
+        </ul>
+
+        <div class="button-stack">
+          <button id="btn-leaderboard-play" class="btn btn-primary">
+            <span>🎮</span> JOM MAIN SEKARANG
+          </button>
+          <button id="btn-back-from-leaderboard" class="btn btn-outline btn-small">
+            Kembali ke Utama
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================
+       MODAL PANDUAN: CARA BERMAIN
+       ========================================== -->
+  <div id="modal-how-to-play" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-guide-title">
+    <div class="modal-card">
+      <h3 id="modal-guide-title" class="modal-title">
+        <span>📖</span> Cara Bermain
+      </h3>
+
+      <div class="guide-step">
+        <div class="guide-num">1</div>
+        <div class="guide-text">
+          <h4>Masukkan Nama Adik</h4>
+          <p>Tulis nama pendek adik (contoh: Ali atau Aisyah) sebelum mula.</p>
+        </div>
+      </div>
+
+      <div class="guide-step">
+        <div class="guide-num">2</div>
+        <div class="guide-text">
+          <h4>Pilih Misi Pembelajaran</h4>
+          <p>Adik boleh pilih Kenali Ayat, Fahami Maksud, atau Misi Campuran.</p>
+        </div>
+      </div>
+
+      <div class="guide-step">
+        <div class="guide-num">3</div>
+        <div class="guide-text">
+          <h4>Jawab 10 Soalan Santai</h4>
+          <p>Tekan kad jawapan yang betul. Setiap soalan yang betul menyumbang 10 mata!</p>
+        </div>
+      </div>
+
+      <div class="guide-step">
+        <div class="guide-num">4</div>
+        <div class="guide-text">
+          <h4>Capai Gelaran Juara!</h4>
+          <p>Kumpulkan sehingga 100 mata dan lihat nama adik di papan pendahulu!</p>
+        </div>
+      </div>
+
+      <button id="btn-close-modal" class="btn btn-primary btn-close-modal">
+        Faham, Jom Main! ✨
+      </button>
+    </div>
+  </div>
+
+  <!-- Kanvas Konfeti Keraian -->
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+  <!-- ARIA Live Region untuk Pembaca Skrin (Aksesibiliti) -->
+  <div id="aria-announcer" class="sr-only" role="status" aria-live="assertive"></div>
+
+  <!-- Footer Ringkas -->
+  <footer class="app-footer">
+    <p>Misi Al-Fatihah &bull; Pendidikan Islam Tahun 1 &bull; Dibina untuk murid-murid di Malaysia</p>
+  </footer>
+
+  <!-- Firebase App & Firestore SDKs (Compat v9 untuk kestabilan static GitHub Pages) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+  <!-- Modul Konfigurasi Firebase & Leaderboard -->
+  <script src="firebase-config.js"></script>
+
+  <!-- Bank Soalan Surah Al-Fatihah -->
+  <script src="questions.js"></script>
+
+  <!-- Logik Permainan Utama -->
+  <script src="script.js"></script>
+</body>
+</html>
