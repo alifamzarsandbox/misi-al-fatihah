@@ -269,7 +269,7 @@
     const trimmed = (rawName || "").trim();
 
     if (!trimmed) {
-      return { valid: false, error: "Sila masukkan nama adik dahulu ya! 😊" };
+      return { valid: false, error: "Sila masukkan nama anda dahulu ya! 😊" };
     }
 
     if (trimmed.length > 15) {
@@ -499,7 +499,7 @@
       elements.feedbackBox.className = "feedback-box correct active";
       elements.feedbackIcon.textContent = "🌟";
       elements.feedbackTitle.textContent = "Hebat! Jawapan betul!";
-      elements.feedbackExplanation.textContent = q.explanation || "Syabas! Adik sangat bijak!";
+      elements.feedbackExplanation.textContent = q.explanation || "Syabas! Anda sangat bijak!";
       announceAria("Jawapan betul! Hebat!");
     } else {
       state.wrongCount++;
@@ -565,7 +565,7 @@
     let badgeIcon = "🏆";
 
     if (state.score >= 90) {
-      message = "Hebat! Adik sangat mengenali Surah Al-Fatihah!";
+      message = "Hebat! Anda sangat mengenali Surah Al-Fatihah!";
       badgeIcon = "🌟";
       triggerConfetti();
     } else if (state.score >= 81) {
@@ -589,10 +589,10 @@
     showScreen("results");
     announceAria(`Tahniah ${state.playerName}! Markah anda ialah ${state.score} daripada 100 mata.`);
 
-    // Simpan rekod markah secara latar belakang (Firebase Firestore / Fallback Demo)
-    if (window.MisiAlFatihahFirebase && typeof window.MisiAlFatihahFirebase.saveScoreRecord === "function") {
+    // Simpan rekod markah secara latar belakang (Google Sheets API / Fallback Demo)
+    if (window.MisiAlFatihahLeaderboard && typeof window.MisiAlFatihahLeaderboard.saveScoreRecord === "function") {
       try {
-        await window.MisiAlFatihahFirebase.saveScoreRecord({
+        await window.MisiAlFatihahLeaderboard.saveScoreRecord({
           name: state.playerName,
           score: state.score,
           timeSeconds: timeTakenSeconds,
@@ -614,20 +614,20 @@
 
     let data = { records: [], isGlobal: false };
 
-    if (window.MisiAlFatihahFirebase && typeof window.MisiAlFatihahFirebase.fetchTop10Leaderboard === "function") {
+    if (window.MisiAlFatihahLeaderboard && typeof window.MisiAlFatihahLeaderboard.fetchTop10Leaderboard === "function") {
       try {
-        data = await window.MisiAlFatihahFirebase.fetchTop10Leaderboard();
+        data = await window.MisiAlFatihahLeaderboard.fetchTop10Leaderboard();
       } catch (e) {
         console.warn("Ralat memuatkan leaderboard:", e);
       }
     }
 
-    // Kemas kini status mod (Global atau Demo)
+    // Kemas kini status mod (Global Google Sheets atau Demo Tempatan)
     if (data.isGlobal) {
-      elements.leaderboardStatusBadge.textContent = "🌍 Leaderboard Global Aktif (Firestore)";
+      elements.leaderboardStatusBadge.textContent = "📊 Leaderboard Google Sheets Aktif";
       elements.leaderboardStatusBadge.style.color = "var(--success-green-dark)";
     } else {
-      elements.leaderboardStatusBadge.textContent = "ℹ️ Mod Demo Tempatan (Firebase belum diaktifkan)";
+      elements.leaderboardStatusBadge.textContent = "ℹ️ Mod Demo Tempatan (Google Sheets belum diaktifkan)";
       elements.leaderboardStatusBadge.style.color = "var(--muted-text)";
     }
 
@@ -911,15 +911,6 @@
   async function initApp() {
     initSoundPreference();
     setupEventListeners();
-
-    // Cuba inisialisasi Firebase jika modul sedia ada
-    if (window.MisiAlFatihahFirebase && typeof window.MisiAlFatihahFirebase.initFirebaseServices === "function") {
-      try {
-        await window.MisiAlFatihahFirebase.initFirebaseServices();
-      } catch (e) {
-        console.info("Firebase dimulakan dalam mod demo:", e);
-      }
-    }
 
     console.info("🚀 Misi Al-Fatihah (Tahun 1) sedia dimainkan!");
   }
