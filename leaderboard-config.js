@@ -17,7 +17,7 @@
  * 5. Salin "Web app URL" dan gantikan pada pemboleh ubah di bawah:
  */
 
-const GOOGLE_SHEETS_SCRIPT_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+const GOOGLE_SHEETS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyO7Tr_WKnRtfX-r465Cq5Ue5XgWes-riGk92EhdJVtq4ZHTTpTvmK574EJSECPodT7/exec";
 
 // Kunci storan tempatan (Mod Demo)
 const LOCAL_STORAGE_LEADERBOARD_KEY = "misi_alfatihah_leaderboard_demo";
