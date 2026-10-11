@@ -100,6 +100,7 @@
     // Skrin F: Leaderboard
     leaderboardStatusBadge: document.getElementById("leaderboard-status-badge"),
     leaderboardList: document.getElementById("leaderboard-list"),
+    recentRecordsList: document.getElementById("recent-records-list"),
     btnLeaderboardPlay: document.getElementById("btn-leaderboard-play"),
     btnBackFromLeaderboard: document.getElementById("btn-back-from-leaderboard"),
 
@@ -605,14 +606,66 @@
   }
 
   // =========================================================================
-  // 9. LEADERBOARD TOP 10
+  // 9. LEADERBOARD TOP 10 & REKOD PENYERTAAN TERKINI
   // =========================================================================
+  function formatRelativeTime(dateInput) {
+    if (!dateInput) return "Baru sahaja";
+
+    // Jika string sudah dalam format mesra paparan
+    if (typeof dateInput === "string") {
+      if (dateInput.includes("lalu") || dateInput === "Hari ini" || dateInput === "Baru sahaja") {
+        return dateInput;
+      }
+    }
+
+    const date = new Date(dateInput);
+    if (isNaN(date.getTime())) {
+      // Tidak dapat dihuraikan sebagai timestamp, pulangkan string asal (tanpa mereka-reka data)
+      return String(dateInput);
+    }
+
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+
+    // Jika perbezaan sangat kecil atau jam peranti sedikit terkehadapan
+    if (diffMs < 60 * 1000) {
+      return "Baru sahaja";
+    }
+
+    const diffMins = Math.floor(diffMs / (60 * 1000));
+    if (diffMins < 60) {
+      return `${diffMins} min lalu`;
+    }
+
+    const diffHours = Math.floor(diffMs / (60 * 60 * 1000));
+    if (diffHours < 24) {
+      return `${diffHours} jam lalu`;
+    }
+
+    const diffDays = Math.floor(diffMs / (24 * 60 * 60 * 1000));
+    if (diffDays === 1) {
+      return "Semalam";
+    }
+    if (diffDays < 7) {
+      return `${diffDays} hari lalu`;
+    }
+
+    // Tarikh penuh jika melebihi 7 hari
+    return date.toLocaleDateString("ms-MY", {
+      day: "2-digit",
+      month: "short"
+    });
+  }
+
   async function loadAndDisplayLeaderboard() {
     showScreen("leaderboard");
     elements.leaderboardStatusBadge.textContent = "Sedang mengambil data kedudukan...";
     elements.leaderboardList.innerHTML = `<li class="leaderboard-empty">Memuatkan senarai juara...</li>`;
+    if (elements.recentRecordsList) {
+      elements.recentRecordsList.innerHTML = `<li class="recent-empty-state">Memuatkan rekod penyertaan...</li>`;
+    }
 
-    let data = { records: [], isGlobal: false };
+    let data = { records: [], recent: [], isGlobal: false };
 
     if (window.MisiAlFatihahLeaderboard && typeof window.MisiAlFatihahLeaderboard.fetchTop10Leaderboard === "function") {
       try {
@@ -631,66 +684,133 @@
       elements.leaderboardStatusBadge.style.color = "var(--muted-text)";
     }
 
+    // 1. Render Senarai Top 10 Juara
     elements.leaderboardList.innerHTML = "";
 
     if (!data.records || data.records.length === 0) {
       elements.leaderboardList.innerHTML = `<li class="leaderboard-empty">Belum ada rekod permainan. Jadilah juara yang pertama!</li>`;
-      return;
+    } else {
+      const medalIcons = ["🥇", "🥈", "🥉"];
+
+      data.records.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.className = `leaderboard-item ${index < 3 ? `rank-${index + 1}` : ""}`;
+
+        const leftDiv = document.createElement("div");
+        leftDiv.className = "lb-left";
+
+        const rankBadge = document.createElement("div");
+        rankBadge.className = "lb-rank";
+        rankBadge.textContent = index < 3 ? medalIcons[index] : String(index + 1);
+
+        const nameBox = document.createElement("div");
+        const nameEl = document.createElement("div");
+        nameEl.className = "lb-name";
+        nameEl.textContent = (item.name || "Murid").substring(0, 15);
+
+        const dateEl = document.createElement("div");
+        dateEl.className = "lb-date";
+        dateEl.textContent = item.displayDate || "Baru sahaja";
+
+        nameBox.appendChild(nameEl);
+        nameBox.appendChild(dateEl);
+
+        leftDiv.appendChild(rankBadge);
+        leftDiv.appendChild(nameBox);
+
+        const rightDiv = document.createElement("div");
+        rightDiv.className = "lb-right";
+
+        const scoreEl = document.createElement("div");
+        scoreEl.className = "lb-score";
+        scoreEl.textContent = `${item.score} mata`;
+
+        const timeEl = document.createElement("div");
+        timeEl.className = "lb-time";
+        if (item.timeSeconds) {
+          timeEl.textContent = `${item.timeSeconds} saat`;
+        }
+
+        rightDiv.appendChild(scoreEl);
+        if (item.timeSeconds) {
+          rightDiv.appendChild(timeEl);
+        }
+
+        li.appendChild(leftDiv);
+        li.appendChild(rightDiv);
+
+        elements.leaderboardList.appendChild(li);
+      });
     }
 
-    const medalIcons = ["🥇", "🥈", "🥉"];
+    // 2. Render Seksyen: Rekod Penyertaan Terkini (Maksimum 20 rekod kompak)
+    if (elements.recentRecordsList) {
+      elements.recentRecordsList.innerHTML = "";
 
-    data.records.forEach((item, index) => {
-      const li = document.createElement("li");
-      li.className = `leaderboard-item ${index < 3 ? `rank-${index + 1}` : ""}`;
+      if (data.recent && Array.isArray(data.recent)) {
+        if (data.recent.length === 0) {
+          elements.recentRecordsList.innerHTML = `<li class="recent-empty-state">Belum ada penyertaan direkodkan.</li>`;
+        } else {
+          const top20Recent = data.recent.slice(0, 20);
 
-      const leftDiv = document.createElement("div");
-      leftDiv.className = "lb-left";
+          top20Recent.forEach((item) => {
+            const li = document.createElement("li");
+            li.className = "recent-record-item";
 
-      const rankBadge = document.createElement("div");
-      rankBadge.className = "lb-rank";
-      rankBadge.textContent = index < 3 ? medalIcons[index] : String(index + 1);
+            // Bahagian Kiri: Ikon Tanda Selesai + Nama Murid + Masa Relatif
+            const leftDiv = document.createElement("div");
+            leftDiv.className = "recent-item-left";
 
-      const nameBox = document.createElement("div");
-      const nameEl = document.createElement("div");
-      nameEl.className = "lb-name";
-      nameEl.textContent = (item.name || "Murid").substring(0, 15);
+            const checkBadge = document.createElement("span");
+            checkBadge.className = "recent-check-badge";
+            checkBadge.setAttribute("aria-hidden", "true");
+            checkBadge.textContent = "✓";
 
-      const dateEl = document.createElement("div");
-      dateEl.className = "lb-date";
-      dateEl.textContent = item.displayDate || "Baru sahaja";
+            const metaDiv = document.createElement("div");
+            metaDiv.className = "recent-user-meta";
 
-      nameBox.appendChild(nameEl);
-      nameBox.appendChild(dateEl);
+            const nameEl = document.createElement("span");
+            nameEl.className = "recent-student-name";
+            nameEl.textContent = (item.name || "Murid").substring(0, 15);
 
-      leftDiv.appendChild(rankBadge);
-      leftDiv.appendChild(nameBox);
+            const timeEl = document.createElement("span");
+            timeEl.className = "recent-time-text";
+            timeEl.textContent = formatRelativeTime(item.timestamp || item.displayDate || item.date);
 
-      const rightDiv = document.createElement("div");
-      rightDiv.className = "lb-right";
+            metaDiv.appendChild(nameEl);
+            metaDiv.appendChild(timeEl);
 
-      const scoreEl = document.createElement("div");
-      scoreEl.className = "lb-score";
-      scoreEl.textContent = `${item.score} mata`;
+            leftDiv.appendChild(checkBadge);
+            leftDiv.appendChild(metaDiv);
 
-      const timeEl = document.createElement("div");
-      timeEl.className = "lb-time";
-      if (item.timeSeconds) {
-        timeEl.textContent = `${item.timeSeconds} saat`;
+            // Bahagian Kanan: Markah yang Diperoleh + Tag "Selesai"
+            const rightDiv = document.createElement("div");
+            rightDiv.className = "recent-item-right";
+
+            const scoreEl = document.createElement("span");
+            scoreEl.className = "recent-score-text";
+            scoreEl.textContent = `${item.score} mata`;
+
+            const statusPill = document.createElement("span");
+            statusPill.className = "recent-status-tag";
+            statusPill.textContent = "Selesai";
+
+            rightDiv.appendChild(scoreEl);
+            rightDiv.appendChild(statusPill);
+
+            li.appendChild(leftDiv);
+            li.appendChild(rightDiv);
+
+            elements.recentRecordsList.appendChild(li);
+          });
+        }
+      } else {
+        // Sekiranya gagal memuatkan data penyertaan
+        elements.recentRecordsList.innerHTML = `<li class="recent-empty-state">Rekod penyertaan tidak dapat dimuatkan buat sementara waktu.</li>`;
       }
+    }
 
-      rightDiv.appendChild(scoreEl);
-      if (item.timeSeconds) {
-        rightDiv.appendChild(timeEl);
-      }
-
-      li.appendChild(leftDiv);
-      li.appendChild(rightDiv);
-
-      elements.leaderboardList.appendChild(li);
-    });
-
-    announceAria("Senarai Top 10 Juara Misi Al-Fatihah dipaparkan.");
+    announceAria("Senarai Juara dan Rekod Penyertaan Terkini dipaparkan.");
   }
 
   // =========================================================================

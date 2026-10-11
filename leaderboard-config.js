@@ -17,10 +17,11 @@
  * 5. Salin "Web app URL" dan gantikan pada pemboleh ubah di bawah:
  */
 
-const GOOGLE_SHEETS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyO7Tr_WKnRtfX-r465Cq5Ue5XgWes-riGk92EhdJVtq4ZHTTpTvmK574EJSECPodT7/exec";
+const GOOGLE_SHEETS_SCRIPT_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
 
 // Kunci storan tempatan (Mod Demo)
 const LOCAL_STORAGE_LEADERBOARD_KEY = "misi_alfatihah_leaderboard_demo";
+const LOCAL_STORAGE_RECENT_KEY = "misi_alfatihah_recent_demo";
 const SUBMITTED_SESSIONS_KEY = "misi_alfatihah_submitted_sessions";
 
 /**
@@ -59,6 +60,7 @@ async function saveScoreRecord(scoreData) {
   const cleanScore = Number(score) || 0;
   const cleanTime = Number(timeSeconds) || 0;
   const cleanSessionId = sessionId || String(Date.now());
+  const isoTimestamp = new Date().toISOString();
   const dateStr = new Date().toLocaleDateString("ms-MY", {
     day: "2-digit",
     month: "short",
@@ -71,6 +73,7 @@ async function saveScoreRecord(scoreData) {
     score: cleanScore,
     timeSeconds: cleanTime,
     sessionId: cleanSessionId,
+    timestamp: isoTimestamp,
     displayDate: dateStr
   };
 
@@ -83,6 +86,8 @@ async function saveScoreRecord(scoreData) {
       targetUrl.searchParams.append("score", String(cleanScore));
       targetUrl.searchParams.append("time", String(cleanTime));
       targetUrl.searchParams.append("sessionId", cleanSessionId);
+      targetUrl.searchParams.append("timestamp", isoTimestamp);
+      targetUrl.searchParams.append("date", dateStr);
 
       // Hantar permintaan ke Google Apps Script (GET request selamat merentas CORS)
       const response = await fetch(targetUrl.toString(), {
@@ -119,8 +124,8 @@ async function saveScoreRecord(scoreData) {
 }
 
 /**
- * Dapatkan data Top 10 dari Google Sheets atau LocalStorage
- * @returns {Promise<{records: Array, isGlobal: boolean}>}
+ * Dapatkan data Top 10 dan Rekod Terkini dari Google Sheets atau LocalStorage
+ * @returns {Promise<{records: Array, recent: Array, isGlobal: boolean}>}
  */
 async function fetchTop10Leaderboard() {
   if (isLeaderboardConfigured()) {
@@ -143,9 +148,17 @@ async function fetchTop10Leaderboard() {
 
       if (response.ok) {
         const result = await response.json();
-        if (result && Array.isArray(result.records)) {
-          return { records: result.records.slice(0, 10), isGlobal: true };
+        const records = (result && Array.isArray(result.records)) ? result.records.slice(0, 10) : [];
+        // Jika Google Apps Script sudah menyokong result.recent, gunakan itu.
+        // Jika belum (versi lama), fallback ke rekod terkini tempatan.
+        let recent = [];
+        if (result && Array.isArray(result.recent)) {
+          recent = result.recent.slice(0, 20);
+        } else {
+          recent = getLocalRecentData().slice(0, 20);
         }
+
+        return { records, recent, isGlobal: true };
       }
     } catch (err) {
       console.warn("Gagal memuat turun dari Google Sheets. Menggunakan rekod tempatan:", err);
@@ -154,13 +167,19 @@ async function fetchTop10Leaderboard() {
 
   // Fallback: Ambil rekod demo tempatan
   const localList = getLocalLeaderboardData();
-  return { records: localList.slice(0, 10), isGlobal: false };
+  const localRecent = getLocalRecentData();
+  return {
+    records: localList.slice(0, 10),
+    recent: localRecent.slice(0, 20),
+    isGlobal: false
+  };
 }
 
 /**
- * Simpan satu rekod ke senarai demo tempatan
+ * Simpan satu rekod ke senarai demo tempatan (Leaderboard & Rekod Terkini)
  */
 function saveToLocalDemo(record) {
+  // 1. Simpan ke Top 10 (disusun mengikut markah terbaik)
   const localData = getLocalLeaderboardData();
   localData.push(record);
   localData.sort((a, b) => {
@@ -168,16 +187,29 @@ function saveToLocalDemo(record) {
     return a.timeSeconds - b.timeSeconds;
   });
   localStorage.setItem(LOCAL_STORAGE_LEADERBOARD_KEY, JSON.stringify(localData.slice(0, 20)));
+
+  // 2. Simpan ke Rekod Penyertaan Terkini (paling baharu di hadapan, maksimum 20)
+  const recentData = getLocalRecentData();
+  recentData.unshift({
+    name: record.name,
+    score: record.score,
+    timeSeconds: record.timeSeconds,
+    timestamp: record.timestamp || new Date().toISOString(),
+    displayDate: record.displayDate || "Baru sahaja"
+  });
+  localStorage.setItem(LOCAL_STORAGE_RECENT_KEY, JSON.stringify(recentData.slice(0, 20)));
 }
 
 /**
- * Ambil rekod demo tempatan dari localStorage
+ * Ambil rekod demo tempatan (Top 10) dari localStorage
  */
 function getLocalLeaderboardData() {
   try {
     const raw = localStorage.getItem(LOCAL_STORAGE_LEADERBOARD_KEY);
     if (!raw) {
       const defaultDemo = [
+        { name: "Ustaz Alif", score: 100, timeSeconds: 10, displayDate: "Hari ini" },
+        { name: "aina", score: 100, timeSeconds: 70, displayDate: "Hari ini" },
         { name: "Ali", score: 100, timeSeconds: 45, displayDate: "Hari ini" },
         { name: "Aisyah", score: 100, timeSeconds: 52, displayDate: "Hari ini" },
         { name: "Adam", score: 90, timeSeconds: 40, displayDate: "Hari ini" },
@@ -186,6 +218,30 @@ function getLocalLeaderboardData() {
       ];
       localStorage.setItem(LOCAL_STORAGE_LEADERBOARD_KEY, JSON.stringify(defaultDemo));
       return defaultDemo;
+    }
+    return JSON.parse(raw);
+  } catch (e) {
+    return [];
+  }
+}
+
+/**
+ * Ambil rekod penyertaan terkini demo tempatan dari localStorage
+ */
+function getLocalRecentData() {
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_RECENT_KEY);
+    if (!raw) {
+      const now = Date.now();
+      const defaultRecent = [
+        { name: "Ustaz Alif", score: 100, timeSeconds: 10, timestamp: new Date(now - 2 * 60000).toISOString(), displayDate: "2 min lalu" },
+        { name: "aina", score: 100, timeSeconds: 70, timestamp: new Date(now - 15 * 60000).toISOString(), displayDate: "15 min lalu" },
+        { name: "Ali", score: 100, timeSeconds: 45, timestamp: new Date(now - 35 * 60000).toISOString(), displayDate: "35 min lalu" },
+        { name: "Aisyah", score: 100, timeSeconds: 52, timestamp: new Date(now - 60 * 60000).toISOString(), displayDate: "1 jam lalu" },
+        { name: "Adam", score: 90, timeSeconds: 40, timestamp: new Date(now - 120 * 60000).toISOString(), displayDate: "2 jam lalu" }
+      ];
+      localStorage.setItem(LOCAL_STORAGE_RECENT_KEY, JSON.stringify(defaultRecent));
+      return defaultRecent;
     }
     return JSON.parse(raw);
   } catch (e) {

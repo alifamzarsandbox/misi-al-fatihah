@@ -4,6 +4,8 @@ Permainan kuiz interaktif bertajuk **“Misi Al-Fatihah”** yang direka khas un
 
 Game ini membolehkan murid mengenali ayat, memadankan maksud, menyusun ayat, serta menguji hafazan Surah Al-Fatihah dalam suasana santai, ceria, dan menyeronokkan tanpa rasa tertekan.
 
+Pangkalan data markah (*Leaderboard*) kini menggunakan **Google Sheets & Google Apps Script**, memudahkan para guru menyemak markah murid secara langsung seperti membuka fail Excel!
+
 ---
 
 ## 🎯 Ciri-Ciri Utama Permainan
@@ -21,8 +23,8 @@ Game ini membolehkan murid mengenali ayat, memadankan maksud, menyusun ayat, ser
   - 💡 **Fahami Maksud** (Kefahaman erti ayat).
   - ⭐ **Misi Campuran** (Gabungan seimbang ayat & maksud).
 - **Reka Bentuk Mesra Kanak-Kanak**: Mengadaptasi gaya antaramuka berkualiti tinggi (inspirasi Khan Academy Kids) dengan palet warna ceria, maskot buku pembelajaran comel, tipografi bulat (*Fredoka*) dan tulisan Arab (*Noto Naskh Arabic*) yang bersaiz besar dan tidak terpotong.
-- **Sintesis Audio Asli (Web Audio API)**: Tona bunyi klik, chime jawapan betul, dan lagu kemenangan tanpa bergantung pada fail MP3 pihak ketiga. Boleh dihidupkan atau dimatikan pada bila-bila masa.
-- **Leaderboard Global Top 10 (Firebase Firestore)**: Bersama mod sandaran **Mod Demo Tempatan (localStorage)** automatik jika Firebase belum dikonfigurasikan atau di luar talian.
+- **Sintesis Audio Asli (Web Audio API)**: Tona bunyi klik, chime jawapan betul, dan lagu kemenangan tanpa bergantung pada fail MP3 pihak ketiga.
+- **Leaderboard Google Sheets & Mod Demo**: Markah disimpan terus ke helaian Google Sheets guru, bersama mod sandaran **Mod Demo Tempatan (localStorage)** automatik jika di luar talian (*offline*).
 - **Aksesibel & Responsif**: Berfungsi lancar pada telefon pintar (Android & iPhone potret), tablet, laptop, dan komputer meja, serta menyokong kawalan papan kekunci (1, 2, 3, 4, Enter, Space).
 
 ---
@@ -31,148 +33,139 @@ Game ini membolehkan murid mengenali ayat, memadankan maksud, menyusun ayat, ser
 
 ```text
 HAFAZAN SURAH AL-FATIHAH/
-├── index.html           # Struktur semantik antaramuka game (6 skrin & modal bantuan)
-├── style.css            # Gaya visual responsif, palet warna, animasi & aksesibiliti
-├── script.js            # Logik permainan, pengesahan input, enjin audio & pemarkahan
-├── questions.js         # Bank 35 soalan hafazan & kefahaman Surah Al-Fatihah
-├── firebase-config.js   # Konfigurasi Firebase Firestore & sandaran mod demo tempatan
-└── README.md            # Panduan lengkap pemasangan, Firebase & penerbitan
+├── index.html              # Struktur semantik antaramuka game (6 skrin & modal bantuan)
+├── style.css               # Gaya visual responsif, palet warna, animasi & aksesibiliti
+├── script.js               # Logik permainan, pengesahan input, enjin audio & pemarkahan
+├── questions.js            # Bank 35 soalan hafazan & kefahaman Surah Al-Fatihah
+├── leaderboard-config.js   # Konfigurasi Google Sheets API & sandaran mod demo tempatan
+└── README.md               # Panduan lengkap pemasangan, Google Sheets & penerbitan
 ```
 
 ---
 
-## 🚀 Panduan Penerbitan ke GitHub Pages (Hosting Statik Percuma)
+## 📊 Cara Sambungkan Leaderboard ke Google Sheets (Mudah & Percuma!)
 
-Game ini dibina dengan **Vanilla HTML5, CSS3, dan JavaScript**, menjadikannya 100% serasi untuk dihoskan secara percuma di GitHub Pages:
+Dengan menggunakan Google Sheets, cikgu boleh melihat nama murid, markah, dan tarikh bermain terus di Google Drive cikgu tanpa perlu mendaftar Firebase.
 
-### Langkah 1: Cipta Repository di GitHub
-1. Log masuk ke akaun GitHub anda di [https://github.com](https://github.com).
-2. Tekan butang **New** untuk mencipta repository baru.
-3. Namakan repository anda, contohnya: `misi-al-fatihah`.
-4. Tetapkan visibility kepada **Public**.
-5. Tekan **Create repository**.
+### Langkah 1: Cipta Google Sheet Baru
+1. Buka [Google Sheets](https://sheets.new) di pelayar web anda.
+2. Namakan fail tersebut: **Leaderboard Misi Al-Fatihah**.
+3. Pada baris pertama (Row 1), buat tajuk lajur seperti berikut:
+   - **A1**: `Nama Murid`
+   - **B1**: `Markah`
+   - **C1**: `Masa (Saat)`
+   - **D1**: `Tarikh`
+   - **E1**: `Session ID`
 
-### Langkah 2: Muat Naik Fail Projek
-1. Buka folder projek di komputer anda.
-2. Muat naik kesemua 6 fail (`index.html`, `style.css`, `script.js`, `questions.js`, `firebase-config.js`, `README.md`) ke dalam branch utama (`main`).
-3. Anda boleh menggunakan arahan Git atau butang *“Upload files”* pada laman GitHub:
-   ```bash
-   git init
-   git add .
-   git commit -m "Misi Al-Fatihah v1.0"
-   git branch -M main
-   git remote add origin https://github.com/<username-anda>/misi-al-fatihah.git
-   git push -u origin main
-   ```
-
-### Langkah 3: Aktifkan GitHub Pages
-1. Pada repository anda di GitHub, buka tab **Settings**.
-2. Di menu sebelah kiri, pilih **Pages**.
-3. Di bawah bahagian **Build and deployment** -> **Branch**:
-   - Pilih branch: `main`
-   - Pilih folder: `/ (root)`
-4. Tekan **Save**.
-5. Dalam masa 1–2 minit, laman web anda akan aktif di pautan:
-   `https://<username-anda>.github.io/misi-al-fatihah/`
-
----
-
-## 🔥 Konfigurasi Firebase Firestore (Untuk Leaderboard Global)
-
-Secara lalai, game ini boleh terus dimainkan dalam **Mod Demo Tempatan** tanpa Firebase. Namun, jika anda ingin mengaktifkan **Leaderboard Global Top 10** merentas peranti murid:
-
-### Langkah 1: Cipta Projek Firebase
-1. Buka [Firebase Console](https://console.firebase.google.com/) dan log masuk dengan Google.
-2. Tekan **Add project** (Tambah projek).
-3. Berikan nama projek (contoh: `misi-al-fatihah-sekolah`).
-4. Matikan Google Analytics (pilihan) dan tekan **Create project**.
-
-### Langkah 2: Aktifkan Cloud Firestore
-1. Pada menu sebelah kiri console Firebase, klik **Build** -> **Firestore Database**.
-2. Tekan **Create database**.
-3. Pilih lokasi pelayan terdekat (contoh: `asia-southeast1` untuk Malaysia / Singapura).
-4. Pilih **Start in production mode**.
-
-### Langkah 3: Aktifkan Anonymous Authentication
-1. Pada menu kiri, klik **Build** -> **Authentication**.
-2. Tekan **Get Started**.
-3. Pada tab **Sign-in method**, pilih **Anonymous** dan tukar status ke **Enable**.
-4. Tekan **Save**.
-
-### Langkah 4: Masukkan Konfigurasi ke dalam `firebase-config.js`
-1. Di Firebase Console, klik ikon gear (Project Settings) di sebelah kiri atas.
-2. Di bahagian **Your apps**, klik ikon Web (`</>`).
-3. Masukkan nama aplikasi (contoh: `Misi Al-Fatihah Web`) dan tekan **Register app**.
-4. Salin objek `firebaseConfig` yang dipaparkan dan tampal ke dalam fail `firebase-config.js`:
+### Langkah 2: Buka Apps Script
+1. Di menu atas Google Sheet, klik **Extensions** $\rightarrow$ **Apps Script**.
+2. Padam semua kod asal dalam editor tersebut.
+3. Salin dan tampal kod Google Apps Script terkini di bawah:
 
 ```javascript
-const firebaseConfig = {
-  apiKey: "AIzaSyD-CONTOH-KUNCI-API-ANDA",
-  authDomain: "misi-al-fatihah.firebaseapp.com",
-  projectId: "misi-al-fatihah",
-  storageBucket: "misi-al-fatihah.appspot.com",
-  messagingSenderId: "1234567890",
-  appId: "1:1234567890:web:abcdef123456"
-};
-```
-
-### Langkah 5: Tetapkan Peraturan Keselamatan Firestore (Security Rules)
-Bagi mengelakkan manipulasi markah atau penyalahgunaan pangkalan data, buka tab **Rules** di Cloud Firestore dan gunakan peraturan selamat ini:
-
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /leaderboard/{document} {
-      // Benarkan sesiapa membaca Top 10
-      allow read: if true;
-      
-      // Benarkan simpan rekod hanya jika data mematuhi format sah
-      allow create: if request.resource.data.score is number
-                    && request.resource.data.score >= 0 
-                    && request.resource.data.score <= 100
-                    && request.resource.data.name is string
-                    && request.resource.data.name.size() > 0
-                    && request.resource.data.name.size() <= 15
-                    && request.resource.data.timeSeconds is number
-                    && request.resource.data.sessionId is string;
-      
-      // Halang sebarang kemas kini atau pemadaman daripada pelayar murid
-      allow update, delete: if false;
+function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var params = e.parameter;
+  
+  // 1. SIMPAN MARKAH (ACTION = SAVE)
+  if (params.action === "save") {
+    var name = (params.name || "Murid").substring(0, 15);
+    var score = Number(params.score) || 0;
+    var timeSeconds = Number(params.time) || 0;
+    var sessionId = params.sessionId || "";
+    var timestamp = params.timestamp || new Date().toISOString();
+    var displayDate = params.date || Utilities.formatDate(new Date(), "Asia/Kuala_Lumpur", "dd MMM yyyy, hh:mm a");
+    
+    // Semak jika sesi sudah disimpan (elak rekod berulang)
+    var data = sheet.getDataRange().getValues();
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][4] && data[i][4].toString() === sessionId) {
+        return ContentService.createTextOutput(JSON.stringify({ status: "exists" }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
     }
+    
+    // Tambah rekod murid ke baris baru (Kolum: Nama, Markah, Masa, Timestamp/Tarikh, Session ID)
+    sheet.appendRow([name, score, timeSeconds, timestamp, sessionId]);
+    
+    return ContentService.createTextOutput(JSON.stringify({ status: "success" }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
+  
+  // 2. DAPATKAN DATA (ACTION = GET)
+  var data = sheet.getDataRange().getValues();
+  var allRecords = [];
+  
+  for (var i = 1; i < data.length; i++) {
+    allRecords.push({
+      name: data[i][0],
+      score: Number(data[i][1]) || 0,
+      timeSeconds: Number(data[i][2]) || 0,
+      timestamp: data[i][3] || "",
+      displayDate: data[i][3] || ""
+    });
+  }
+  
+  // A. TOP 10 TERBAIK (Susun: Markah tertinggi dahulu, kemudian masa terpantas)
+  var top10 = allRecords.slice();
+  top10.sort(function(a, b) {
+    if (b.score !== a.score) {
+      return b.score - a.score;
+    }
+    return a.timeSeconds - b.timeSeconds;
+  });
+  top10 = top10.slice(0, 10);
+  
+  // B. 20 REKOD PENYERTAAN TERKINI (Terbaharu di atas)
+  var recent20 = allRecords.slice().reverse().slice(0, 20);
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    records: top10,
+    recent: recent20
+  })).setMimeType(ContentService.MimeType.JSON);
 }
 ```
-Tekan **Publish** untuk mengaktifkan peraturan tersebut.
+
+### Langkah 3: Terbitkan / Kemas Kini Sebagai Web App
+1. Di bahagian kanan atas editor Apps Script:
+   - **Jika kali pertama**: Klik butang biru **Deploy** $\rightarrow$ **New deployment** $\rightarrow$ pilih jenis **Web app**.
+   - **Jika sudah pernah deploy**: Klik butang **Deploy** $\rightarrow$ **Manage deployments** $\rightarrow$ klik ikon pensel ✏️ (Edit) $\rightarrow$ pada pilihan **Version**, pilih **New version** $\rightarrow$ klik **Deploy**.
+2. Pastikan tetapan adalah:
+   - **Execute as**: `Me (<email-anda>)`
+   - **Who has access**: `Anyone` *(PENTING: Pilih "Anyone" supaya murid boleh hantar markah tanpa perlu log masuk akaun Google)*
+3. Salin **Web app URL** yang tertera (bermula dengan `https://script.google.com/macros/s/.../exec`).
+
+### Langkah 4: Masukkan URL ke dalam `leaderboard-config.js`
+1. Buka fail [`leaderboard-config.js`](file:///c:/Users/AlifAmzar/Desktop/HUAWEI/ANTIGRAVITY/HAFAZAN%20SURAH%20AL-FATIHAH/leaderboard-config.js).
+2. Gantikan teks contoh dengan URL Web App anda:
+   ```javascript
+   const GOOGLE_SHEETS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx.../exec";
+   ```
+3. Simpan fail dan muat naik perubahan ke GitHub repository anda!
 
 ---
 
-## 📱 Menguji Leaderboard Pada Pelbagai Peranti
+## 🚀 Panduan Penerbitan ke GitHub Pages
 
-1. Buka pautan GitHub Pages pada telefon pintar (Peranti A).
-2. Masukkan nama (contoh: `Aiman`), selesaikan 10 soalan kuiz.
-3. Buka pautan yang sama pada komputer atau tablet (Peranti B).
-4. Tekan butang **JUARA LEADERBOARD** pada Peranti B.
-5. Rekod markah `Aiman` dari Peranti A akan terpapar serta-merta pada papan pendahulu Peranti B!
+1. Muat naik fail berikut ke repository GitHub anda (`misi-al-fatihah`):
+   - `index.html`
+   - `style.css`
+   - `script.js`
+   - `questions.js`
+   - `leaderboard-config.js`
+   - `README.md`
+2. Pada repository GitHub anda, klik **Settings** $\rightarrow$ **Pages**.
+3. Di bawah **Build and deployment** $\rightarrow$ **Branch**, pilih **`main`** dan folder **`/ (root)`**.
+4. Klik **Save**. Dalam masa 1–2 minit, game anda sedia dimainkan di:
+   `https://<username-anda>.github.io/misi-al-fatihah/`
 
 ---
 
 ## 🛠️ Penyelesaian Masalah Lazim (Troubleshooting)
 
-1. **Bagaimana jika sekolah tiada sambungan internet yang stabil?**
-   - Game tetap berfungsi sepenuhnya! Jika Firebase tidak dapat diakses, sistem secara automatik menyimpan rekod dalam `localStorage` (Mod Demo Tempatan) tanpa memaparkan mesej ralat yang mengganggu tumpuan murid.
-2. **Tulisan Arab tidak kelihatan sempurna atau terpotong?**
-   - Fail `style.css` telah dioptimumkan dengan nilai `line-height: 2.1` dan font `Noto Naskh Arabic` bersama atribut `dir="rtl"`. Pastikan pelayar web menyokong sambungan internet untuk memuat turun font Google Noto Naskh.
-3. **Tiada bunyi keluar semasa bermain?**
-   - Pastikan butang bunyi 🔊 di bahagian kanan atas berada dalam keadaan aktif.
-   - Kebanyakan pelayar moden (seperti Safari & Chrome) memerlukan sekurang-kurangnya satu interaksi klik daripada pengguna sebelum membenarkan audio dimainkan.
-4. **Nama murid tidak boleh dimasukkan?**
-   - Nama dihadkan kepada huruf, nombor dan ruang dengan panjang maksimum 15 aksara bagi menjaga privasi kanak-kanak dan kesesuaian paparan.
-
----
-
-## 📜 Hak Cipta & Integriti Teks
-
-- Teks ayat-ayat Al-Quran dan terjemahan Surah Al-Fatihah yang digunakan disemak rapi mengikut mushaf standard dan terjemahan yang diperakui di Malaysia.
-- Tiada sebarang ilustrasi yang menggambarkan Allah, para nabi atau kandungan Al-Quran secara tidak wajar digunakan.
-- Selamat, bebas iklan dan mesra privasi kanak-kanak.
+1. **Kenapa status Leaderboard masih "Mod Demo Tempatan"?**
+   - Ini bermakna pemboleh ubah `GOOGLE_SHEETS_SCRIPT_URL` di dalam `leaderboard-config.js` belum digantikan dengan URL Google Apps Script sebenar. Sila lengkapkan Langkah 3 & 4 di atas.
+2. **Murid main di telefon, adakah markah masuk ke Google Sheet cikgu?**
+   - Ya! Sebaik sahaja murid selesai menjawab 10 soalan, markah dan masa mereka akan dihantar terus ke Google Sheet anda dalam masa 1-2 saat.
+3. **Bagaimana jika sekolah tiada sambungan internet?**
+   - Game tetap berfungsi sepenuhnya! Jika tiada sambungan internet, sistem secara automatik menggunakan Mod Demo Tempatan tanpa sebarang ralat teknikal.
